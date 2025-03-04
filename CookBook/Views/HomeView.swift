@@ -8,6 +8,8 @@ import SwiftUI
 struct HomeView: View {
     
     @State var viewModel = HomeViewModel()
+    @Environment(SessionManager.self) var sessionManager: SessionManager
+    
     private let spacing: CGFloat = 5
     private let padding: CGFloat = 5
     
@@ -87,6 +89,7 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environment(SessionManager())
 }
 
 
