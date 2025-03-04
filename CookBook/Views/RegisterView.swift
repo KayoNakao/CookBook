@@ -1,5 +1,5 @@
 //
-//  LoginView.swift
+//  RegisterView.swift
 //  CookBook
 //
 //  Created by Kayo on 2025-03-04.
@@ -7,12 +7,18 @@
 
 import SwiftUI
 
-struct LoginView: View {
+struct RegisterView: View {
     
-    @State var viewModel = LoginViewModel()
-        
+    @State var viewModel = RegisterViewModel()
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         VStack(alignment: .leading) {
+            Text("Username")
+                .font(.system(size: 15))
+            TextField("Username", text: $viewModel.username)
+                .keyboardType(.emailAddress)
+                .textFieldStyle(AuthTextFieldStyle())
             Text("Email")
                 .font(.system(size: 15))
             TextField("Email", text: $viewModel.email)
@@ -24,18 +30,18 @@ struct LoginView: View {
             Button(action: {
                 
             }, label: {
-                Text("Login")
+                Text("Sign up")
             })
             .buttonStyle(PrimaryButtonStyle())
             
             HStack {
                 Spacer()
-                Text("Don't have an account?")
+                Text("Already have an account?")
                     .font(.system(size: 14))
                 Button(action: {
-                    viewModel.presentRegisterView = true
+                    dismiss()
                 }, label: {
-                    Text("Register now")
+                    Text("Login now")
                         .font(.system(size: 14, weight: .semibold))
                 })
                 Spacer()
@@ -43,12 +49,9 @@ struct LoginView: View {
             .padding(.top, 20)
         }
         .padding(.horizontal, 10)
-        .fullScreenCover(isPresented: $viewModel.presentRegisterView) {
-            RegisterView()
-        }
     }
 }
 
 #Preview {
-    LoginView()
+    RegisterView()
 }

@@ -1,5 +1,5 @@
 //
-//  LoginViewModel.swift
+//  RegisterViewModel.swift
 //  CookBook
 //
 //  Created by Kayo on 2025-03-04.
@@ -8,11 +8,12 @@
 import Foundation
 
 @Observable
-class LoginViewModel {
+class RegisterViewModel {
     
-    var presentRegisterView = false
+    var username = ""
     var email = ""
     var password = ""
     var showPassword = false
     
+
 }
