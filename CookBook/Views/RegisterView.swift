@@ -10,6 +10,7 @@ import SwiftUI
 struct RegisterView: View {
     
     @State var viewModel = RegisterViewModel()
+    @Environment(SessionManager.self) var sessionManager: SessionManager
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -30,7 +31,9 @@ struct RegisterView: View {
                 PasswordComponentView(showPassword: $viewModel.showPassword, password: $viewModel.password)
                 Button(action: {
                     Task {
-                        await viewModel.signup()
+                        if let user = await viewModel.signup() {
+                            sessionManager.sessionState = .loggedIn
+                        }
                     }
                 }, label: {
                     Text("Sign up")
@@ -67,4 +70,5 @@ struct RegisterView: View {
 
 #Preview {
     RegisterView()
+        .environment(SessionManager())
 }

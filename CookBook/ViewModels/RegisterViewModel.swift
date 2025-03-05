@@ -20,12 +20,12 @@ class RegisterViewModel {
     var errorMessage = ""
     var presentAlert = false
     
-    func signup() async -> Bool {
+    func signup() async -> User? {
         
         guard validateUsername() else {
             errorMessage = "Username must be greater than 3 characters and less than 25 characters."
             presentAlert = true
-            return false
+            return nil
         }
         
         isLoading = true
@@ -34,27 +34,25 @@ class RegisterViewModel {
             isLoading = false
             errorMessage = "Something has gone wrong. Please try again later."
             presentAlert = true
-            return false
+            return nil
         }
         
         guard usernameDocuments.documents.count == 0 else {
             isLoading = false
             errorMessage = "Username already exsits"
             presentAlert = true
-            return false
+            return nil
         }
         
         do {
             let result = try await Auth.auth().createUser(withEmail: email, password: password)
-            let userData: [String: Any] = [
-                "username": username,
-                "email": email
-            ]
-            try await Firestore.firestore().collection("users").document(result.user.uid).setData(userData)
+            let user = User(id: result.user.uid, username: username, email: email)
+            try Firestore.firestore().collection("users").document(user.id).setData(from: user)
             isLoading = false
-            return true
+            return user
+            
         } catch {
-            errorMessage = "Login Failed"
+            errorMessage = "Sing up Failed"
             if let errorCode = AuthErrorCode(rawValue: error._code) {
                 switch errorCode {
                 case .emailAlreadyInUse:
@@ -67,7 +65,7 @@ class RegisterViewModel {
             }
             isLoading = false
             presentAlert = true
-            return false
+            return nil
         }
      }
 

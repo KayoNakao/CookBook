@@ -73,7 +73,9 @@ struct HomeView: View {
             .alert("Are you sure you would like to sign out?", isPresented: $viewModel.showSignOutAlert) {
                 
                 Button("Sign Out", role: .destructive) {
-                    //sessionManager.sessionState = .loggedOut
+                    if viewModel.signOut() {
+                        sessionManager.sessionState = .loggedOut
+                    }
                 }
                 Button("Cancel", role: .cancel) {
                     
