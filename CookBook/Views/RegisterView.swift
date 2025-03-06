@@ -31,7 +31,7 @@ struct RegisterView: View {
                 PasswordComponentView(showPassword: $viewModel.showPassword, password: $viewModel.password)
                 Button(action: {
                     Task {
-                        if let user = await viewModel.signup() {
+                        if let _ = await viewModel.signup() {
                             sessionManager.sessionState = .loggedIn
                         }
                     }

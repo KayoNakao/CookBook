@@ -10,9 +10,15 @@ struct HomeView: View {
     @State var viewModel = HomeViewModel()
     @Environment(SessionManager.self) var sessionManager: SessionManager
     
-    private let spacing: CGFloat = 5
-    private let padding: CGFloat = 5
+    private let columns = [
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10)
+    ]
+    private let spacing: CGFloat = 10
+    private let padding: CGFloat = 10
     
+
     var itemWidth: CGFloat {
         let screenWidth = UIScreen.main.bounds.width
         return (screenWidth - spacing * 2 - padding * 2) / 3
@@ -24,12 +30,20 @@ struct HomeView: View {
 
     fileprivate func ReceipeRow(receipe: Receipe) -> some View {
         VStack(alignment: .leading) {
-            Image(receipe.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
+            
+            AsyncImage(url: URL(string: receipe.image)) { image in
+                    image.resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: itemWidth, height: itemHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipped()
+            } placeholder: {
+                VStack {
+                    ProgressView()
+                }
                 .frame(width: itemWidth, height: itemHeight)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .clipped()
+            }
+            
             Text(receipe.name)
                 .lineLimit(1)
                 .font(.system(size: 15, weight: .semibold))
@@ -40,17 +54,18 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                HStack(spacing: spacing) {
-                    ForEach(0...2, id: \.self) { index in
-                        NavigationLink {
-                            ReceipeDetailView(receipe: Receipe.mockReceipes[index])
-                        } label: {
-                            ReceipeRow(receipe: Receipe.mockReceipes[index])
+                ScrollView {
+                    LazyVGrid(columns: columns, content: {
+                        ForEach(viewModel.receipes) { receipe in
+                            NavigationLink {
+                                ReceipeDetailView(receipe: receipe)
+                            } label: {
+                                ReceipeRow(receipe: receipe)
+                            }
                         }
-
-                    }
+                    })
+                    .padding(padding)
                 }
-                .padding(.horizontal, padding)
                 Spacer()
                 Button(action: {
                     viewModel.showAddReceipeView = true
@@ -82,6 +97,9 @@ struct HomeView: View {
                 }
             }
         }
+        .task({
+            await viewModel.fetchReceipes()
+        })
         .sheet(isPresented: $viewModel.showAddReceipeView) {
             AddReceipeView()
         }

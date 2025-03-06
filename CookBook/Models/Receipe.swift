@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct Receipe: Identifiable, Codable {
     let id: String
@@ -24,12 +25,37 @@ struct Receipe: Identifiable, Codable {
         self.userId = userId
     }
     
+    init?(snapshot: QueryDocumentSnapshot) {
+        let data = snapshot.data()
+        guard let imageLocation = data["image"] as? String else {
+            return nil
+        }
+        guard let name = data["name"] as? String else {
+            return nil
+        }
+        guard let instructions = data["instructions"] as? String else {
+            return nil
+        }
+        guard let time = data["time"] as? Int else {
+            return nil
+        }
+        guard let userId = data["userId"] as? String else {
+            return nil
+        }
+        self.image = imageLocation
+        self.name = name
+        self.instructions = instructions
+        self.time = time
+        self.userId = userId
+        self.id = snapshot.documentID
+    }
+    
 }
 
 extension Receipe {
     
     static var mockReceipes = [
-        Receipe(id: UUID().uuidString, name: "Steak and Potatoes", image: "beef", instructions: "To prepare a classic steak and potatoes meal, start by preheating your oven to 400°F for the potatoes. Wash and cut the potatoes into wedges, toss them with olive oil, salt, pepper, and your choice of herbs like rosemary or thyme. Spread them on a baking sheet and roast until golden and crispy, about 25-30 minutes, turning halfway through. Meanwhile, take your steak out of the fridge and let it come to room temperature for about 20 minutes. Season it generously with salt and pepper. Heat a cast-iron skillet over high heat and add a splash of oil. Sear the steak for about 3-4 minutes on each side for medium-rare, or longer depending on the thickness and your preference. Let the steak rest for a few minutes before slicing. Serve with the roasted potatoes and a side of steamed vegetables or a fresh salad for a complete meal.", time: 40, userId: "testUserId0"),
+        Receipe(id: UUID().uuidString, name: "Steak and Potatoes", image: "https://firebasestorage.googleapis.com/v0/b/cookbook-e9737.firebasestorage.app/o/mockImage%2Fbeef.jpg?alt=media&token=3c9c9b63-4979-438b-8b07-c7b3b4c40f67", instructions: "To prepare a classic steak and potatoes meal, start by preheating your oven to 400°F for the potatoes. Wash and cut the potatoes into wedges, toss them with olive oil, salt, pepper, and your choice of herbs like rosemary or thyme. Spread them on a baking sheet and roast until golden and crispy, about 25-30 minutes, turning halfway through. Meanwhile, take your steak out of the fridge and let it come to room temperature for about 20 minutes. Season it generously with salt and pepper. Heat a cast-iron skillet over high heat and add a splash of oil. Sear the steak for about 3-4 minutes on each side for medium-rare, or longer depending on the thickness and your preference. Let the steak rest for a few minutes before slicing. Serve with the roasted potatoes and a side of steamed vegetables or a fresh salad for a complete meal.", time: 40, userId: "testUserId0"),
         Receipe(id: UUID().uuidString, name: "Roast Chicken", image: "chicken", instructions: "To prepare a delicious roast chicken, begin by preheating your oven to 375°F (190°C). Clean the chicken by removing any giblets and pat it dry with paper towels. Rub the entire surface of the chicken with olive oil and season generously inside and out with salt, pepper, and herbs like rosemary, thyme, and sage. Optionally, stuff the cavity with halved lemons and garlic cloves to enhance the flavor. Place the chicken breast-side up in a roasting pan. Tuck the wing tips under the body and tie the legs together with kitchen twine. Roast in the oven for about 20 minutes per pound, or until the internal temperature reaches 165°F (74°C) and the juices run clear. Let the chicken rest for 10 minutes before carving to allow the juices to redistribute. Serve with roasted vegetables or a light salad for a hearty, satisfying meal.", time: 50, userId: "testUserId1"),
         Receipe(id: UUID().uuidString, name: "Lasagna", image: "lasagna", instructions: "To prepare a classic lasagna, start by preheating your oven to 375°F (190°C). First, prepare the meat sauce by sautéing chopped onions and garlic in olive oil until translucent. Add ground beef or a mix of beef and pork, and cook until browned. Stir in a can of crushed tomatoes, basil, oregano, salt, and pepper, and let it simmer for about 20 minutes. In a separate bowl, mix ricotta cheese with an egg, grated Parmesan, and chopped parsley. To assemble the lasagna, spread a layer of meat sauce in a baking dish, followed by a layer of lasagna noodles (no need to boil if using oven-ready noodles). Spread a layer of the ricotta mixture over the noodles, and sprinkle with shredded mozzarella. Repeat the layers until all ingredients are used, finishing with a generous layer of cheese. Cover with foil and bake for 25 minutes, then remove the foil and bake for another 25 minutes until the top is bubbly and golden. Allow it to rest for 15 minutes before slicing to help the layers set. Serve warm with a side of garlic bread or a green salad.", time: 60, userId: "testUserId2"),
         Receipe(id: UUID().uuidString, name: "Omelette", image: "omelette", instructions: "To prepare a basic omelette, start by beating 2-3 eggs in a bowl with a pinch of salt and pepper. Heat a non-stick skillet over medium heat and add a small amount of butter or oil. Once the butter is melted or the oil is hot, pour in the eggs. As the eggs begin to set, gently lift the edges with a spatula, allowing the uncooked eggs to flow underneath. When the eggs are mostly set but still slightly runny on top, add your chosen fillings—such as cheese, diced vegetables, herbs, or cooked meats—on one half of the omelette. Carefully fold the other half over the fillings. Let it cook for another minute or so, until the cheese is melted and the omelette is cooked through. Slide the omelette onto a plate and serve immediately. Enjoy a customizable and quick meal that's perfect for breakfast or a light dinner.", time: 10, userId: "testUserId3"),

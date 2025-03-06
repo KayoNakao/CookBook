@@ -12,12 +12,20 @@ struct ReceipeDetailView: View {
     let receipe: Receipe
     
     var body: some View {
-        VStack {
-            Image(receipe.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 250)
-                .clipped()
+        VStack(alignment: .leading) {
+            AsyncImage(url: URL(string: receipe.image)) { image in
+                image.resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 250)
+                    .clipped()
+            } placeholder: {
+                ZStack {
+                    Rectangle()
+                        .fill(.gray)
+                        .frame(height: 250)
+                    Image(systemName: "photo.fill")
+                }
+            }
             HStack {
                 Text(receipe.name)
                     .font(.system(size: 22, weight: .semibold))
